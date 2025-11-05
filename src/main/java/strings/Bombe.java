@@ -128,7 +128,6 @@ public class Bombe {
         if (mini.first == 10_000_000_00 && mini.second == 10_000_000_00) {
             return new int[]{-1, -1};
         } else {
-            System.out.println(mini.first + " " + mini.second);
             return new int[]{mini.first, mini.second};
         }
         // END STRIP
