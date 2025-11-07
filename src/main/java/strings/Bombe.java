@@ -68,7 +68,7 @@ public class Bombe {
             baseExponent[i] = safeMod(baseExponent[i - 1] * A);
         }
 
-        long[] hahes = new long[n];
+        long[] hashes = new long[n];
 
         Map<Long, Pair<Integer, Integer>> cnt = new HashMap<>();
 
@@ -79,25 +79,27 @@ public class Bombe {
                 hash += grid[i][j] * baseExponent[j];
                 hash = safeMod(hash);
             }
-            hahes[i] = hash;
+            hashes[i] = hash;
             if(cnt.containsKey(hash)) {
                 cnt.get(hash).first = Math.min(i+1, cnt.get(hash).first);
             }else {
-                cnt.put(hahes[i], new Pair<>(0, i + 1));
+                cnt.put(hashes[i], new Pair<>(0, i + 1));
             }
         }
 
+        Pair<Integer, Integer> mini = new Pair<>(10_000_000_00, 10_000_000_00);
+
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
-                hahes[i] -= (grid[i][m - j - 1] * baseExponent[m - 1]) % MOD;
-                hahes[i] %= MOD;
-                hahes[i] *= A;
-                hahes[i] %= MOD;
-                hahes[i] += grid[i][m - j - 1];
-                hahes[i] %= MOD;
+                hashes[i] -= (grid[i][m - j - 1] * baseExponent[m - 1]) % MOD;
+                hashes[i] %= MOD;
+                hashes[i] *= A;
+                hashes[i] %= MOD;
+                hashes[i] += grid[i][m - j - 1];
+                hashes[i] %= MOD;
 
-                cnt.computeIfAbsent(hahes[i], k -> new Pair<>(0, 0));
-                Pair<Integer, Integer> pair = cnt.get(hahes[i]);
+                cnt.computeIfAbsent(hashes[i], k -> new Pair<>(0, 0));
+                Pair<Integer, Integer> pair = cnt.get(hashes[i]);
 
                 if (pair.first == 0 && (i+1) != pair.second) {
                     pair.first = i + 1;
@@ -112,17 +114,11 @@ public class Bombe {
                 int temp = pair.first;
                 pair.first = Math.min(pair.first, pair.second);
                 pair.second = Math.max(temp, pair.second);
-                cnt.replace(hahes[i], pair);
+                cnt.replace(hashes[i], pair);
+
+                if (pair.first == 0 || pair.second == 0) continue;
+                if (pair.compareTo(mini) < 0) mini = pair;
             }
-        }
-
-        Pair<Integer, Integer> mini = new Pair<>(10_000_000_00, 10_000_000_00);
-
-        for (Map.Entry<Long, Pair<Integer, Integer>> entry : cnt.entrySet()) {
-            Pair<Integer, Integer> value = entry.getValue();
-
-            if (value.first == 0 || value.second == 0) continue;
-            if (value.compareTo(mini) < 0) mini = value;
         }
 
         if (mini.first == 10_000_000_00 && mini.second == 10_000_000_00) {
