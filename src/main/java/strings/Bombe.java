@@ -40,6 +40,7 @@ public class Bombe {
     static final long MOD = (1L << 60);
     static final long A = 91138;
     static long[] hashes;
+    // store the base at the ith power to avoid recomputing it every time.
     static long[] baseExponent;
     //BEGIN STRIP
     static int _n, _m;
