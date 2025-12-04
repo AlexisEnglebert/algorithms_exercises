@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-
-
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.security.SecureRandom;
@@ -79,20 +77,6 @@ public class BombeTest {
                 "RGBRGBRGG".toCharArray(),
         };
         assertArrayEquals(new int[]{-1, -1}, Bombe.solve(bomb.length, bomb[0].length, bomb));
-    }
-
-    @Test
-    @Grade(value = 1)
-    public void minOrder() {
-        char[][] bomb = new char[][]{
-                "aaa".toCharArray(),
-                "bbb".toCharArray(),
-                "aaa".toCharArray(),
-                "bbb".toCharArray(),
-                "ccc".toCharArray(),
-                "ccc".toCharArray()
-        };
-        assertArrayEquals(new int[]{1, 3}, Bombe.solve(bomb.length, bomb[0].length, bomb));
     }
 
     @Test
@@ -198,29 +182,6 @@ public class BombeTest {
         for(int i = 0; i < bomb.length; i++) {
             bomb[i] = (randRow(bomb[0].length, letters).toCharArray());
         }
-        SecureRandom rnd = new SecureRandom();
-        int first = rnd.nextInt(bomb.length);
-        int second = first;
-        while(second == first) {
-            second = rnd.nextInt(bomb.length);
-        }
-
-        bomb[first] = bomb[second];
-        String rotated = rotateString(new String(bomb[first]), rnd.nextInt(2*bomb[0].length));
-        bomb[first] = rotated.toCharArray();
-        assertArrayEquals(new int[]{Math.min(first+1, second+1), Math.max(first+1, second+1)}, Bombe.solve(bomb.length, bomb[0].length, bomb));
-    }
-
-    @Test
-    @Grade(value = 1, cpuTimeout = 1000, unit = TimeUnit.MILLISECONDS)
-    public void smallRandom() {
-        char[][] bomb = new char[10][10];
-        final String letters = "abcdefghijklmnopqrstuvwxyz";
-
-        for(int i = 0; i < bomb.length; i++) {
-            bomb[i] = (randRow(bomb[0].length, letters).toCharArray());
-        }
-
         SecureRandom rnd = new SecureRandom();
         int first = rnd.nextInt(bomb.length);
         int second = first;

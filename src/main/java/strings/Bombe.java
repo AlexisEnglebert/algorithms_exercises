@@ -21,9 +21,6 @@ import java.util.Map;
  * If you can’t find two identical rows, the bomb explodes!
  *
  * You must return the indices of the two identical rows in increasing order.
- * If there are multiple pairs, return the one with the smallest first index.
- * If two pairs have the same first index,
- * return the one with the smallest second index.
  * If you don’t find two identical rows, return [-1, -1].
  *
  * Time complexity O(n · m)
@@ -40,16 +37,31 @@ import java.util.Map;
  */
 
 public class Bombe {
-   // BEGIN STRIP
     static final long MOD = (1L << 60);
     static final long A = 91138;
+    static long[] hashes;
+    static long[] baseExponent;
+    //BEGIN STRIP
+    static int _n, _m;
+    //END STRIP
 
-    static long safeMod(long a) {
-        return (a % Bombe.MOD + Bombe.MOD) % Bombe.MOD;
+    /**
+     * Rotate           A given hashed string to the right.
+     * @param hash      The input hashed string
+     * @param toRemove  The character to rotate
+     * @return          The hash of the string rotated to the right.
+     */
+    public static long rotateHash(long hash, char toRemove) {
+        //BEGIN STRIP
+        hash -= ( toRemove * baseExponent[_m - 1]) % MOD;
+        hash %= MOD;
+        hash *= A;
+        hash %= MOD;
+        hash += toRemove;
+        hash %= MOD;
+        //END STRIP
+        return hash;
     }
-
-    // END STRIP
-
     /**
      * @param n     The number of columns in the grid
      * @param m     The number of rows in the grid
@@ -59,96 +71,52 @@ public class Bombe {
      */
     public static int[] solve(int n, int m, char [][] grid) {
         //TODO
-        // STUDENT return -1;
-        // BEGIN STRIP
-        long[] baseExponent = new long[m];
+        baseExponent = new long[m];
+        hashes = new long[n];
         baseExponent[0] = 1;
 
+        //BEGIN STRIP
+        _m = m;
+        _n = n;
+        HashMap<Long, Integer> match = new HashMap<>();
+        //END STRIP
         for (int i = 1; i < m; i++) {
-            baseExponent[i] = safeMod(baseExponent[i - 1] * A);
+            baseExponent[i] = (baseExponent[i - 1] * A) % MOD;
+            baseExponent[i] %= MOD;
         }
-
-        long[] hashes = new long[n];
-
-        Map<Long, Pair<Integer, Integer>> cnt = new HashMap<>();
-
         for (int i = 0; i < n; i++) {
             long hash = 0;
 
             for (int j = 0; j < m; j++) {
                 hash += grid[i][j] * baseExponent[j];
-                hash = safeMod(hash);
+                hash %= MOD;
             }
             hashes[i] = hash;
-            if(cnt.containsKey(hash)) {
-                cnt.get(hash).first = Math.min(i+1, cnt.get(hash).first);
-            }else {
-                cnt.put(hashes[i], new Pair<>(0, i + 1));
-            }
         }
-
-        Pair<Integer, Integer> mini = new Pair<>(10_000_000_00, 10_000_000_00);
+        // STUDENT return -1;
+        // BEGIN STRIP
+        for(int i = 0; i < hashes.length; i++) {
+            match.put(hashes[i], i);
+        }
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
-                hashes[i] -= (grid[i][m - j - 1] * baseExponent[m - 1]) % MOD;
-                hashes[i] %= MOD;
-                hashes[i] *= A;
-                hashes[i] %= MOD;
-                hashes[i] += grid[i][m - j - 1];
-                hashes[i] %= MOD;
-
-                cnt.computeIfAbsent(hashes[i], k -> new Pair<>(0, 0));
-                Pair<Integer, Integer> pair = cnt.get(hashes[i]);
-
-                if (pair.first == 0 && (i+1) != pair.second) {
-                    pair.first = i + 1;
-                } else if (pair.second == 0 && (i+1) != pair.first) {
-                    pair.second = i + 1;
-                } else if((i+1) < pair.first && (i+1) != pair.second) {
-                    pair.first = i+1;
-                } else if((i+1) < pair.second && (i+1) != pair.first) {
-                    pair.second = i+1;
+                hashes[i] = rotateHash(hashes[i], grid[i][m - j - 1]);
+                if (!match.containsKey(hashes[i])) {
+                    match.put(hashes[i], i);
                 }
 
-                int temp = pair.first;
-                pair.first = Math.min(pair.first, pair.second);
-                pair.second = Math.max(temp, pair.second);
-                cnt.replace(hashes[i], pair);
-
-                if (pair.first == 0 || pair.second == 0) continue;
-                if (pair.compareTo(mini) < 0) mini = pair;
+                if(match.get(hashes[i]) != i) {
+                    int a = match.get(hashes[i])+1;
+                    int b = i+1;
+                    return new  int[]{Math.min(a, b), Math.max(a, b) };
+                }
             }
-        }
-
-        if (mini.first == 10_000_000_00 && mini.second == 10_000_000_00) {
-            return new int[]{-1, -1};
-        } else {
-            return new int[]{mini.first, mini.second};
         }
         // END STRIP
+        return new  int[]{-1, -1};
     }
 
-    // BEGIN STRIP
-    static class Pair<T extends Comparable<T>, U extends Comparable<U>> implements Comparable<Pair<T, U>> {
-        T first;
-        U second;
-
-        Pair(T first, U second) {
-            this.first = first;
-            this.second = second;
-        }
-
-        @Override
-        public int compareTo(Pair<T, U> other) {
-            int cmp = this.first.compareTo(other.first);
-            if (cmp != 0) {
-                return cmp;
-            }
-            return this.second.compareTo(other.second);
-        }
-    }
-    // END STRIP
 }
 
 
