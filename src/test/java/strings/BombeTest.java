@@ -81,6 +81,34 @@ public class BombeTest {
 
     @Test
     @Grade(value = 1)
+    public void minOrder() {
+        char[][] bomb = new char[][]{
+                "aaa".toCharArray(),
+                "bbb".toCharArray(),
+                "aaa".toCharArray(),
+                "bbb".toCharArray(),
+                "ccc".toCharArray(),
+                "ccc".toCharArray()
+        };
+        assertArrayEquals(new int[]{1, 3}, Bombe.solve(bomb.length, bomb[0].length, bomb));
+    }
+
+    @Test
+    @Grade(value = 1)
+    public void minOrder2() {
+        char[][] bomb = new char[][]{
+                "aaa".toCharArray(),
+                "aab".toCharArray(),
+                "aac".toCharArray(),
+                "aab".toCharArray(),
+                "aaa".toCharArray(),
+                "aab".toCharArray()
+        };
+        assertArrayEquals(new int[]{1, 5}, Bombe.solve(bomb.length, bomb[0].length, bomb));
+    }
+
+    @Test
+    @Grade(value = 1)
     public void uniqueCharPerRow() {
         char[][] bomb = new char[][]{
                 "rrrrrrrrrrrr".toCharArray(),

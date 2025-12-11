@@ -1,7 +1,5 @@
 package strings;
-
 import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Author: Alexis Englebert
@@ -100,6 +98,8 @@ public class Bombe {
             match.put(hashes[i], i);
         }
 
+        int left = Integer.MAX_VALUE;
+        int right = Integer.MAX_VALUE;
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
                 hashes[i] = rotateHash(hashes[i], grid[i][m - j - 1]);
@@ -110,12 +110,21 @@ public class Bombe {
                 if(match.get(hashes[i]) != i) {
                     int a = match.get(hashes[i])+1;
                     int b = i+1;
-                    return new  int[]{Math.min(a, b), Math.max(a, b) };
+                    int mini = Math.min(a, b);
+                    int maxi = Math.max(a, b);
+                    if(mini <= left) {
+                        left = mini;
+                        right = Math.min(right, maxi);
+                    }
                 }
             }
         }
+        if(left != Integer.MAX_VALUE && right != Integer.MAX_VALUE){
+            return new int[]{left, right};
+        }
         // END STRIP
         return new  int[]{-1, -1};
+
     }
 
 }
